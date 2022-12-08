@@ -2,33 +2,38 @@ package com.jemimah.memory_timeline.model;
 
 public class DataModel {
 
+    int id;
     String name;
-    String type;
-    String version_number;
-    String feature;
+    String date;
 
-    public DataModel(String name, String type, String version_number, String feature ) {
+    public DataModel(int id, String name, String date ) {
+        this.id = id;
         this.name=name;
-        this.type=type;
-        this.version_number=version_number;
-        this.feature=feature;
+        this.date = date;
 
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getType() {
-        return type;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getVersion_number() {
-        return version_number;
+    public String getDate() {
+        return date;
     }
 
-    public String getFeature() {
-        return feature;
+    public void setDate(String date) {
+        this.date = date;
     }
-
 }

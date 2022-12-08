@@ -15,11 +15,15 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.jemimah.memory_timeline.R;
 import com.jemimah.memory_timeline.adapter.CustomAdapter;
+import com.jemimah.memory_timeline.model.DataModel;
+
+import java.util.ArrayList;
 
 public class DrawView extends View {
 
@@ -33,7 +37,7 @@ public class DrawView extends View {
     int screenHeight_;
     CustomAdapter adapter;
 
-    float firstX_point, firstY_point;
+    OnSwipeTouchListener onSwipeTouchListener;
 
     public DrawView(Context context) {
         super(context);
@@ -55,6 +59,7 @@ public class DrawView extends View {
         this.context = context;
         this.adapter = adapter;
         this.container = container;
+        onSwipeTouchListener = new OnSwipeTouchListener(context, container);
         init(context);
     }
 
@@ -77,28 +82,9 @@ public class DrawView extends View {
 
         drawCurve(canvas);
 
-        View view1 = adapter.getView(0, null, null);
-        View view2 = adapter.getView(1, null, null);
-        View view3 = adapter.getView(2, null, null);
-        View view4 = adapter.getView(3, null, null);
+        ArrayList<DataModel> memories = adapter.getData();
 
-        Bitmap b1 = loadBitmapFromView(view1, screenWidth_ / 2, screenHeight_ / 3);
-        Bitmap b2 = loadBitmapFromView(view2, screenWidth_ / 2, screenHeight_ / 3);
-        Bitmap b3 = loadBitmapFromView(view4, screenWidth_ / 2, screenHeight_ / 3);
-        Bitmap b4 = loadBitmapFromView(view3, screenWidth_ / 2, screenHeight_ / 3);
-
-        b3 = Bitmap.createScaledBitmap(
-                b3, screenWidth / (4 * 1), screenHeight / (5 * 1), false);
-
-        b4 = Bitmap.createScaledBitmap(
-                b4, (int) (screenWidth / (4)), (int) (screenHeight / (5)), false);
-
-        b2 = Bitmap.createScaledBitmap(
-                b2, (int) (screenWidth / (3)), screenHeight / (4), false);
-        canvas.drawBitmap(b1, (float) (screenWidth * 0.0012), (float) (screenHeight * 0.58), paint);
-        canvas.drawBitmap(b2, (float) (screenWidth * 0.4142), (float) (screenHeight * 0.70), paint);
-        canvas.drawBitmap(b3, (float) (screenWidth * 0.614), (float) (screenHeight * 0.14), paint);
-        canvas.drawBitmap(b4, (float) (screenWidth * 0.3642), (float) (screenHeight * 0.4357), paint);
+        inflateViews(canvas, memories);
 
         makeRadGrad(canvas);
 
@@ -107,7 +93,7 @@ public class DrawView extends View {
     private void drawCurve(Canvas canvas) {
         path = new Path();
         paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(10);
+        paint.setStrokeWidth(9);
         path.moveTo(0, (float) (screenHeight * 0.9857));
         path.cubicTo(
                 (float) (screenWidth * 1.7), (float) (screenHeight * 0.95),
@@ -118,7 +104,7 @@ public class DrawView extends View {
         path.cubicTo(
                 (float) (screenWidth * 1.4), (float) (screenHeight * 0.4167),
                 (float) (screenWidth * 0.3), (float) (screenHeight * 0.3333),
-                screenWidth, (float) (screenHeight * 0.2)
+                screenWidth, (float) (screenHeight * 0.185)
         );
         canvas.drawPath(path, paint);
 
@@ -137,11 +123,73 @@ public class DrawView extends View {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             shader = new LinearGradient(0, (float) (screenHeight / 4) * 2,
                     (float) endX, (float) endY,
-                    context.getColor(R.color.dark_grey), Color.TRANSPARENT, Shader.TileMode.CLAMP);
+                    context.getColor(R.color.gradient), Color.TRANSPARENT, Shader.TileMode.CLAMP);
         }
         Paint paint = new Paint();
         paint.setShader(shader);
         canvas.drawRect(new RectF(0, 0, screenWidth, screenHeight), paint);
+    }
+
+    private void inflateViews(Canvas canvas, @NonNull ArrayList<DataModel> memories) {
+
+        for (int i = 0; i < memories.size(); i++) {
+            View view = adapter.getView(i, null, null);
+
+            Bitmap  bitmap = loadBitmapFromView(view, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+
+            if (i == 0) {
+                canvas.drawBitmap(bitmap, (float) (screenWidth * 0.1), (float) (screenHeight * 0.64), paint);
+            } else if (i == 1) {
+                Bitmap b2 = Bitmap.createScaledBitmap(
+                        bitmap, (int) (screenWidth / (2.5)), (int) (screenHeight / (3.5)), false);
+
+                canvas.drawBitmap(b2, (float) (screenWidth * 0.52), (float) (screenHeight * 0.67), paint);
+            } else if (i == 2) {
+                Bitmap b3 = Bitmap.createScaledBitmap(
+                        bitmap, screenWidth / 3, screenHeight / 4, false);
+
+                canvas.drawBitmap(b3, (float) (screenWidth * 0.395), (float) (screenHeight * 0.368), paint);
+            } else if (i == 3) {
+                Bitmap b4 = Bitmap.createScaledBitmap(
+                        bitmap, (int) (screenWidth / 3.5), (int) (screenHeight / 4.5), false);
+
+                canvas.drawBitmap(b4, (float) (screenWidth * 0.776), (float) (screenHeight * 0.239), paint);
+            } else if (i == 4) {
+                Bitmap b5 = Bitmap.createScaledBitmap(
+                        bitmap, (int) (screenWidth / 4), (int) (screenHeight / 5), false);
+
+                canvas.drawBitmap(b5, (float) (screenWidth * 0.66), (float) (screenHeight * 0.07), paint);
+            }
+        }
+        /*View view1 = adapter.getView(0, null, null);
+        View view2 = adapter.getView(1, null, null);
+        View view3 = adapter.getView(2, null, null);
+        View view4 = adapter.getView(3, null, null);
+        View view5 = adapter.getView(4, null, null);
+
+        Bitmap b1 = loadBitmapFromView(view1, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+        Bitmap b2 = loadBitmapFromView(view2, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+        Bitmap b3 = loadBitmapFromView(view3, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+        Bitmap b4 = loadBitmapFromView(view4, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+        Bitmap b5 = loadBitmapFromView(view5, screenWidth_ / 2, (int) (screenHeight_ / 3.5));
+
+        b2 = Bitmap.createScaledBitmap(
+                b2, (int) (screenWidth / (2.5)), (int) (screenHeight / (3.5)), false);
+
+        b3 = Bitmap.createScaledBitmap(
+                b3, screenWidth / 3, screenHeight / 4, false);
+
+        b4 = Bitmap.createScaledBitmap(
+                b4, (int) (screenWidth / 3.5), (int) (screenHeight / 4.5), false);
+
+        b5 = Bitmap.createScaledBitmap(
+                b5, (int) (screenWidth / 4), (int) (screenHeight / 5), false);
+
+        canvas.drawBitmap(b1, (float) (screenWidth * 0.1), (float) (screenHeight * 0.64), paint);
+        canvas.drawBitmap(b2, (float) (screenWidth * 0.52), (float) (screenHeight * 0.67), paint);
+        canvas.drawBitmap(b3, (float) (screenWidth * 0.395), (float) (screenHeight * 0.368), paint);
+        canvas.drawBitmap(b4, (float) (screenWidth * 0.776), (float) (screenHeight * 0.239), paint);
+        canvas.drawBitmap(b5, (float) (screenWidth * 0.66), (float) (screenHeight * 0.07), paint);*/
     }
 
     public static Bitmap loadBitmapFromView(View view, int width, int height) {
@@ -159,47 +207,82 @@ public class DrawView extends View {
         return b;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public static class OnSwipeTouchListener implements View.OnTouchListener {
+        private final GestureDetector gestureDetector;
+        Context context;
 
-        int action = event.getAction();
-
-        switch (action) {
-
-            case MotionEvent.ACTION_DOWN:
-                firstX_point = event.getRawX();
-                firstY_point = event.getRawY();
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-                float finalX = event.getRawX();
-                float finalY = event.getRawY();
-
-                int distanceX = (int) (finalX - firstX_point);
-                int distanceY = (int) (finalY - firstY_point);
-
-                if (Math.abs(distanceX) > Math.abs(distanceY)) {
-                    if ((firstX_point < finalX)) {
-                        Log.d("Test", "Left to Right swipe performed");
-                        Toast.makeText(context, "Left to Right swipe performed", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d("Test", "Right to Left swipe performed");
-                        Toast.makeText(context, "Right to Left swipe performed", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    if ((firstY_point < finalY)) {
-                        Log.d("Test", "Up to Down swipe performed");
-                        Toast.makeText(context, "Up to Down swipe performed", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d("Test", "Down to Up swipe performed");
-                        Toast.makeText(context, "Down to Up swipe performed", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                break;
+        OnSwipeTouchListener(Context ctx, View mainView) {
+            gestureDetector = new GestureDetector(ctx, new GestureListener());
+            mainView.setOnTouchListener(this);
+            context = ctx;
         }
 
-        return true;
-    }
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
 
+        public class GestureListener extends
+                GestureDetector.SimpleOnGestureListener {
+            private static final int SWIPE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                boolean result = false;
+                try {
+                    float diffY = e2.getY() - e1.getY();
+                    float diffX = e2.getX() - e1.getX();
+                    if (Math.abs(diffX) > Math.abs(diffY)) {
+                        if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                            if (diffX > 0) {
+                                onSwipeRight();
+                            } else {
+                                onSwipeLeft();
+                            }
+                            result = true;
+                        }
+                    }
+                    else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffY > 0) {
+                            onSwipeBottom();
+                        } else {
+                            onSwipeTop();
+                        }
+                        result = true;
+                    }
+                }
+                catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                return result;
+            }
+        }
+        void onSwipeRight() {
+            Toast.makeText(context, "Swiped Right", Toast.LENGTH_SHORT).show();
+            this.onSwipe.swipeRight();
+        }
+        void onSwipeLeft() {
+            Toast.makeText(context, "Swiped Left", Toast.LENGTH_SHORT).show();
+            this.onSwipe.swipeLeft();
+        }
+        void onSwipeTop() {
+            Toast.makeText(context, "Swiped Up", Toast.LENGTH_SHORT).show();
+            this.onSwipe.swipeTop();
+        }
+        void onSwipeBottom() {
+            Toast.makeText(context, "Swiped Down", Toast.LENGTH_SHORT).show();
+            this.onSwipe.swipeBottom();
+        }
+        interface onSwipeListener {
+            void swipeRight();
+            void swipeTop();
+            void swipeBottom();
+            void swipeLeft();
+        }
+        onSwipeListener onSwipe;
+    }
 }

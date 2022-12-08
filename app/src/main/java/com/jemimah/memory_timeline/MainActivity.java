@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<DataModel> dataModels = new ArrayList<>();
 
-        dataModels.add(new DataModel("Apple Pie", "Android 1.0", "1", "September 23, 2008"));
-        dataModels.add(new DataModel("Banana Bread", "Android 1.1", "2", "February 9, 2009"));
-        dataModels.add(new DataModel("Cupcake", "Android 1.5", "3", "April 27, 2009"));
-        dataModels.add(new DataModel("Cupcake", "Android 1.5", "3", "April 27, 2009"));
-        dataModels.add(new DataModel("Cupcake", "Android 1.5", "3", "April 27, 2009"));
+        dataModels.add(new DataModel(1, "Android 1.0", "23 January 2022"));
+        dataModels.add(new DataModel(2, "Android 1.1", "15 March 2022"));
+        dataModels.add(new DataModel(3, "Android 1.5", "6 July 2022"));
+        dataModels.add(new DataModel(4, "Android 1.5", "15 September 2022"));
+        dataModels.add(new DataModel(5, "Android 1.5", "1 November 2022"));
 
         CustomAdapter adapter = new CustomAdapter(dataModels, getApplicationContext());
 
